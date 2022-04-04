@@ -1,35 +1,100 @@
 package it.polito.tdp.nobel.model;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import it.polito.tdp.nobel.db.EsameDAO;
 
 public class Model {
 
-	
-	public Set<Esame> calcolaSottoinsiemeEsami(int numeroCrediti) {
-		System.out.println("TODO!");
-		return null;	
+	private List<Esame> esami;
+	private Set<Esame> migliore;
+	private double mediaMigliore;
+
+	public Model() {
+		EsameDAO dao = new EsameDAO();
+		this.esami = dao.getTuttiEsami();
 	}
 
-	
+	public Set<Esame> calcolaSottoinsiemeEsami(int m) {
+		migliore = new HashSet<Esame>();
+		mediaMigliore = 0;
+
+		Set<Esame> parziale = new HashSet<Esame>();
+		// cerca1(parziale, 0, m);
+		cerca2(parziale, 0, m);
+		return migliore;
+	}
+
+	private void cerca1(Set<Esame> parziale, int L, int m) {
+		int sommaCrediti = sommaCrediti(parziale);
+		if (sommaCrediti > m) {
+			return;
+		}
+		if (sommaCrediti == m) {
+			double mediaVoti = calcolaMedia(parziale);
+			if (mediaVoti > mediaMigliore) {
+				mediaMigliore = mediaVoti;
+				migliore = new HashSet<Esame>(parziale);
+			}
+			return;
+		}
+		if (L == esami.size()) {
+			return;
+		}
+		for (Esame e : esami) {
+			if (!parziale.contains(e)) {
+				parziale.add(e);
+				cerca1(parziale, L + 1, m);
+				parziale.remove(e);
+			}
+		}
+	}
+
+	public void cerca2(Set<Esame> parziale, int L, int m) {
+		int sommaCrediti = sommaCrediti(parziale);
+		if (sommaCrediti > m) {
+			return;
+		}
+		if (sommaCrediti == m) {
+			double mediaVoti = calcolaMedia(parziale);
+			if (mediaVoti > mediaMigliore) {
+				mediaMigliore = mediaVoti;
+				migliore = new HashSet<Esame>(parziale);
+			}
+			return;
+		}
+		if (L == esami.size()) {
+			return;
+		}
+
+		parziale.add(esami.get(L));
+		cerca2(parziale, L + 1, m);
+
+		parziale.remove(esami.get(L));
+		cerca2(parziale, L + 1, m);
+	}
+
 	public double calcolaMedia(Set<Esame> esami) {
-		
+
 		int crediti = 0;
 		int somma = 0;
-		
-		for(Esame e : esami){
+
+		for (Esame e : esami) {
 			crediti += e.getCrediti();
 			somma += (e.getVoto() * e.getCrediti());
 		}
-		
-		return somma/crediti;
+
+		return somma / crediti;
 	}
-	
+
 	public int sommaCrediti(Set<Esame> esami) {
 		int somma = 0;
-		
-		for(Esame e : esami)
+
+		for (Esame e : esami)
 			somma += e.getCrediti();
-		
+
 		return somma;
 	}
 
