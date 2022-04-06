@@ -7,11 +7,9 @@ public class PopulateDB {
 	public static void main(String[] args) {
 		
 		EsameDAO vd = new EsameDAO();
-		
-		// Cancello dal DB tutti i voti inseriti
+
 		vd.cancellaTuttiEsami();
-		
-		// Aggiungo al DB la seguente lista di esami:
+
 		vd.inserisciEsame(new Esame("16ACFPL", "Analisi matematica I", 10, 27));
 		vd.inserisciEsame(new Esame("16AHMPL", "Chimica", 8, 26));
 		vd.inserisciEsame(new Esame("12BHDPL", "Informatica", 8, 25));
